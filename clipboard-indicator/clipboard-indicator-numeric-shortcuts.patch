@@ -709,9 +709,6 @@ index 50439f4..c5f580c 100644
      };
  
      #buildShorcuts (group) {
-diff --git a/schemas/gschemas.compiled b/schemas/gschemas.compiled
-index 6dd240e..7c9b917 100644
-Binary files a/schemas/gschemas.compiled and b/schemas/gschemas.compiled differ
 diff --git a/schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml b/schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml
 index 328de29..9d17d89 100644
 --- a/schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml
