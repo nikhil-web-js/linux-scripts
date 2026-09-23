@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Playlist Bookmark Sync",
+  "version": "1.4.0",
+  "description": "Event-driven YouTube playlist bookmark sync with per-tab state and duplicate navigation protection.",
+  "permissions": [
+    "bookmarks",
+    "webNavigation",
+    "tabs",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "YouTube Playlist Bookmark Sync"
+  }
+}

@@ -335,6 +335,17 @@ Inside Extension Manager search for:
 
 Enable the extension.
 
+##  Install Fullscreen Notifications
+
+Inside Extension Manager search for:
+
+`Fullscreen Notifications`
+
+Enable the extension.
+
+Link: https://extensions.gnome.org/extension/1610/fullscreen-notifications/
+
+This is useful when you want notifications to appear even while watching videos or using fullscreen apps.
 
 </details>
 

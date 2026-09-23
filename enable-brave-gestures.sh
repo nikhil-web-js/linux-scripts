@@ -3,7 +3,7 @@
 set -e
 
 DESKTOP_FILE="/usr/share/applications/brave-browser.desktop"
-FEATURES="--enable-features=TouchpadOverscrollHistoryNavigation --ozone-platform=wayland"
+FEATURES="--enable-features=TouchpadOverscrollHistoryNavigation --ozone-platform=wayland --disk-cache-size=8589934592"
 
 if grep -q "TouchpadOverscrollHistoryNavigation" "$DESKTOP_FILE"; then
     echo "ℹ️ Brave gestures already enabled."
