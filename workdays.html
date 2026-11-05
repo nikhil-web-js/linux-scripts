@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Working Days</title>
+<style>
+  :root {
+    --bg: #f4f4f6;
+    --card-bg: #ffffff;
+    --text: #1c1c1e;
+    --muted: #8a8a8e;
+    --accent: #ff7a1a;
+    --workday: #1c1c1e;
+    --weekend: #c6c6c9;
+    --today-ring: #ff7a1a;
+    --border: #e5e5ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121214;
+      --card-bg: #1c1c1f;
+      --text: #f2f2f4;
+      --muted: #8a8a90;
+      --accent: #ff8a33;
+      --workday: #f2f2f4;
+      --weekend: #4a4a4f;
+      --today-ring: #ff8a33;
+      --border: #2c2c30;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121214;
+    --card-bg: #1c1c1f;
+    --text: #f2f2f4;
+    --muted: #8a8a90;
+    --accent: #ff8a33;
+    --workday: #f2f2f4;
+    --weekend: #4a4a4f;
+    --today-ring: #ff8a33;
+    --border: #2c2c30;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overscroll-behavior: none;
+  }
+
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 420px;
+    padding: 16px 16px 32px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .nav-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    cursor: pointer;
+  }
+  .nav-btn:active { transform: scale(0.94); }
+
+  .title-block {
+    text-align: center;
+    flex: 1;
+  }
+  .month-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .year-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .year-num {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .year-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 2px 6px;
+    cursor: pointer;
+  }
+
+  .hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 4px 0 16px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 14px;
+    touch-action: pan-y;
+  }
+
+  .dow-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 6px;
+  }
+  .dow-row div {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 6px;
+  }
+
+  .cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    font-size: 15px;
+  }
+  .cell.workday { color: var(--workday); font-weight: 600; }
+  .cell.weekend { color: var(--weekend); font-weight: 400; }
+  .cell.empty { visibility: hidden; }
+  .cell.today::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border: 2px solid var(--today-ring);
+    border-radius: 50%;
+  }
+
+  .summary {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .stat {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat .label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .today-btn {
+    display: block;
+    margin: 18px auto 0;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="nav-btn" id="prevMonth">&#8249;</div>
+      <div class="title-block">
+        <p class="month-name" id="monthName">September</p>
+        <div class="year-row">
+          <button class="year-btn" id="prevYear">&#8250;&#65039;&#8593;</button>
+          <span class="year-num" id="yearNum">2026</span>
+          <button class="year-btn" id="nextYear">&#8595;</button>
+        </div>
+      </div>
+      <div class="nav-btn" id="nextMonth">&#8250;</div>
+    </div>
+
+    <div class="hint">Swipe left/right for month &middot; up/down for year</div>
+
+    <div class="card" id="calCard">
+      <div class="dow-row">
+        <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="summary">
+      <div class="stat">
+        <div class="num" id="workdayCount">0</div>
+        <div class="label">Working days</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="totalCount">0</div>
+        <div class="label">Total days</div>
+      </div>
+    </div>
+
+    <button class="today-btn" id="todayBtn">Jump to today</button>
+  </div>
+
+<script>
+  const monthNames = ["January","February","March","April","May","June","July",
+                       "August","September","October","November","December"];
+
+  const now = new Date();
+  let viewMonth = now.getMonth();      // 0-11
+  let viewYear = now.getFullYear();
+
+  const monthNameEl = document.getElementById('monthName');
+  const yearNumEl = document.getElementById('yearNum');
+  const gridEl = document.getElementById('grid');
+  const workdayCountEl = document.getElementById('workdayCount');
+  const totalCountEl = document.getElementById('totalCount');
+  const cardEl = document.getElementById('calCard');
+
+  function render() {
+    monthNameEl.textContent = monthNames[viewMonth];
+    yearNumEl.textContent = viewYear;
+
+    const firstOfMonth = new Date(viewYear, viewMonth, 1);
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    // JS getDay(): 0=Sun..6=Sat. Convert to Monday-first index 0=Mon..6=Sun
+    const jsFirstDow = firstOfMonth.getDay();
+    const leading = (jsFirstDow + 6) % 7;
+
+    gridEl.innerHTML = '';
+    let workdays = 0;
+
+    for (let i = 0; i < leading; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'cell empty';
+      gridEl.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const d = new Date(viewYear, viewMonth, day);
+      const dow = d.getDay(); // 0=Sun..6=Sat
+      const isWeekend = (dow === 0 || dow === 6);
+      if (!isWeekend) workdays++;
+
+      const cell = document.createElement('div');
+      cell.className = 'cell ' + (isWeekend ? 'weekend' : 'workday');
+
+      const isToday = (day === now.getDate() && viewMonth === now.getMonth() && viewYear === now.getFullYear());
+      if (isToday) cell.classList.add('today');
+
+      cell.textContent = day;
+      gridEl.appendChild(cell);
+    }
+
+    workdayCountEl.textContent = workdays;
+    totalCountEl.textContent = daysInMonth;
+  }
+
+  function changeMonth(delta) {
+    viewMonth += delta;
+    if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    render();
+  }
+
+  function changeYear(delta) {
+    viewYear += delta;
+    render();
+  }
+
+  document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
+  document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
+  document.getElementById('prevYear').addEventListener('click', () => changeYear(-1));
+  document.getElementById('nextYear').addEventListener('click', () => changeYear(1));
+  document.getElementById('todayBtn').addEventListener('click', () => {
+    viewMonth = now.getMonth();
+    viewYear = now.getFullYear();
+    render();
+  });
+
+  // Swipe gesture handling
+  let touchStartX = 0, touchStartY = 0;
+  cardEl.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  cardEl.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    const absDx = Math.abs(dx), absDy = Math.abs(dy);
+    const threshold = 40;
+
+    if (Math.max(absDx, absDy) < threshold) return;
+
+    if (absDx > absDy) {
+      if (dx < 0) changeMonth(1); else changeMonth(-1);
+    } else {
+      if (dy < 0) changeYear(1); else changeYear(-1);
+    }
+  }, { passive: true });
+
+  // Keyboard support (desktop browsers)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') changeMonth(1);
+    else if (e.key === 'ArrowLeft') changeMonth(-1);
+    else if (e.key === 'ArrowUp') changeYear(-1);
+    else if (e.key === 'ArrowDown') changeYear(1);
+  });
+
+  render();
+</script>
+</body>
+</html>

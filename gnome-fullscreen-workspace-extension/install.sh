@@ -12,4 +12,7 @@ cp metadata.json "$EXT_DIR/"
 gnome-extensions disable fullscreen-workspace@local 2>/dev/null || true
 gnome-extensions enable fullscreen-workspace@local
 
+gnome-extensions install --force ./hidetopbar-fullscreen@local.zip
+gnome-extensions enable hidetopbar-fullscreen@local
+
 echo "Fullscreen Workspace extension installed and reloaded."
